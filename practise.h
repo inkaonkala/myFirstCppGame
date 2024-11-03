@@ -2,6 +2,8 @@
 #define PRACTISE_H
 
 #include <iostream>
+#include <vector> //for enemies
+#include <ctime> // for randomizing
 
 #include <SFML/Window.hpp>
 #include <SFML/System.hpp>
@@ -20,14 +22,25 @@ private:
 	sf::Event ev;
 	sf::VideoMode videoMode;
 
-	//Game objects
-	//sf::Sprite	piggy;
+	//mouse stuff
+	sf::Vector2i mousePosWin;
+
+	//Game logic stuff
+	int	points;
+	float enemySpawnTimer;
+	float enemySpawnTimerMax;
+	int	maxEnemies;
+
+
+	//Game objects stuff
+	//sf::Sprite	kisu;
+	std::vector<sf::RectangleShape> enemies;
 	sf::RectangleShape enemy;
 
 	void init_var();
 	void init_win();
 	void init_enemies();
-	void initPiggy();
+//	void initKisu();
 
 public:
 	//constructors and distractors
@@ -39,6 +52,10 @@ public:
 
 	 //functions
 	 void pollEvents();
+	 void updateMousePos();
+	 void spawnEnemy();
+	 void updateEnem();
+	 void renderEnemy();
 	 void update();
 	 void render();
 };

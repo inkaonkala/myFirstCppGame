@@ -3,7 +3,7 @@ CXX = g++
 INCLUDE_DIR = /opt/homebrew/Cellar/sfml/2.6.1/include
 LIB_DIR = /opt/homebrew/Cellar/sfml/2.6.1/lib
 
-CXXFLAGS = -I$(INCLUDE_DIR)
+CXXFLAGS = -std=c++11 -I$(INCLUDE_DIR)
 LDFLAGS = -L$(LIB_DIR) -lsfml-graphics -lsfml-window -lsfml-system
 
 TARGET = thisAwesomeTest
