@@ -6,7 +6,7 @@ void Game::init_var()
 
 	this->points = 0;
 	this->enemySpawnTimer = 0.f;
-	this->enemySpawnTimerMax = 1000.f;
+	this->enemySpawnTimerMax = 10.f;
 	this->maxEnemies = 5;
 }
 
@@ -25,8 +25,8 @@ void Game::init_enemies()
 	this->enemy.setSize(sf::Vector2f(50.f, 50.f));
 	//or resize with this->enemy.setScale(Vector2f(0.5f, 0.5,));
 	this->enemy.setFillColor(sf::Color::Magenta);
-	this->enemy.setOutlineColor(sf::Color::Red);
-	this->enemy.setOutlineThickness(2.f);
+//	this->enemy.setOutlineColor(sf::Color::Red);
+//	this->enemy.setOutlineThickness(2.f);
 }
 
 void Game::spawnEnemy()
@@ -94,6 +94,7 @@ void Game::updateMousePos()
 {
 	// vector2i(int x, int y)
 	this->mousePosWin = sf::Mouse::getPosition(*this->window);
+	this->mousePosView = this->window->mapPixelToCoords(this->mousePosWin);
 	//std::cout << "Mouse is here: " << sf::Mouse::getPosition(*this->window).x << " " << sf::Mouse::getPosition(*this->window).y << "\n";
 }
 
@@ -110,11 +111,33 @@ void Game::updateEnem()
 		else
 			this->enemySpawnTimer += 1.f;
 	}
+	for (int i = 0; i < this->enemies.size(); i++)
+	{
+		bool deleted = false;
+		this->enemies[i].move(0.f, 1.f);
+
+		if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			if (this->enemies[i].getGlobalBounds().contains(this->mousePosView))
+			{
+				deleted = true;
+			}
+		}
+		if (this->enemies[i].getPosition().y > this->window->getSize().y)
+		{
+			deleted = true;
+		}
+		if (deleted)
+			this->enemies.erase(this->enemies.begin() + i);
+	}
 	//move enemies
+	/*
+	//this was the practise loop, using e
 	for (auto &e : this->enemies)
 	{
 		e.move(0.f, 5.f);
 	}
+	*/
 }
 
 void Game::update()
