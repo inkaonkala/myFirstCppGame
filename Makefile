@@ -8,7 +8,7 @@ LDFLAGS = -L$(LIB_DIR) -lsfml-graphics -lsfml-window -lsfml-system
 
 TARGET = thisAwesomeTest
 
-SRCS = main.cpp game.cpp
+SRCS = main.cpp game.cpp cat.cpp
 
 all: $(TARGET)
 
