@@ -8,6 +8,9 @@ void Game::init_var()
 	this->enemySpawnTimer = 0.f;
 	this->enemySpawnTimerMax = 10.f;
 	this->maxEnemies = 5;
+	this->maxCats = 5;
+	this->catSpawnTimer = 0.f;
+	this->catSpawnTimerMax = 10.f;
 }
 
 void Game::init_win()
@@ -19,14 +22,41 @@ void Game::init_win()
 	this->window->setFramerateLimit(60);
 }
 
+void Game::initCats()
+{
+	std::string catFiles[3] = {"kisu1.png", "kisu2.png", "kisu3.png"};
+	for (const auto& file : catFiles)
+	{
+		sf::Texture texture;
+		if(!texture.loadFromFile(file))
+		{
+			std::cout << "Error: Could not find the Cat texture!" << std::endl;
+		}
+		else
+		{
+			this->catTexture.push_back(texture);
+		}
+	}
+}
+
 void Game::init_enemies()
 {
+	if (!this->enemyTexture.loadFromFile("pisara.png"))
+	{
+		std::cout << "Error: Could not find the enemy texture!" << std::endl;
+	}
+	this->enemy.setTexture(this->enemyTexture);
+	//check if this is the correct scale!
+//	this->enemy.setScale(0.5f, 0.5f); 
+	/*
+	//this is for simple enemy
 	this->enemy.setPosition(20.f, 20.f);
 	this->enemy.setSize(sf::Vector2f(50.f, 50.f));
 	//or resize with this->enemy.setScale(Vector2f(0.5f, 0.5,));
 	this->enemy.setFillColor(sf::Color::Magenta);
 //	this->enemy.setOutlineColor(sf::Color::Red);
 //	this->enemy.setOutlineThickness(2.f);
+	*/
 }
 
 void Game::spawnEnemy()
@@ -37,14 +67,25 @@ void Game::spawnEnemy()
 		-spawn enemy to vector
 	*/
 	this->enemy.setPosition(
-		static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - (this->enemy.getSize().x))),
+		static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - (this->enemy.getGlobalBounds().width))),
 		//static_cast<float>(rand() % static_cast<int>(this->window->getSize().y - (this->enemy.getSize().y)))
 		0.f
 		);
 
-	this->enemy.setFillColor(sf::Color::Magenta);
+	//this->enemy.setFillColor(sf::Color::Magenta);
 
 	this->enemies.push_back(this->enemy);
+}
+
+void Game::spawnCat()
+{
+	int randomIndex = rand() % this->catTexture.size();
+	this->cat.setTexture(this->catTexture[randomIndex]);
+	this->cat.setPosition(
+		static_cast<float>(rand() % static_cast<int>(this->window->getSize().x - (this->cat.getGlobalBounds().width))),
+		0.f
+	);
+	this->cats.push_back(this->cat);
 }
 
 //Construtors and destructors
@@ -53,6 +94,7 @@ Game::Game()
 	this->init_var();
 	this->init_win();
 	this->init_enemies();
+	this->initCats();
 }
 
 Game::~Game()
@@ -98,6 +140,37 @@ void Game::updateMousePos()
 	//std::cout << "Mouse is here: " << sf::Mouse::getPosition(*this->window).x << " " << sf::Mouse::getPosition(*this->window).y << "\n";
 }
 
+void Game::updateCat()
+{
+	if (this->cats.size() < this->maxCats)
+	{
+		if (this->catSpawnTimer >= this->catSpawnTimerMax)
+		{
+			this->spawnCat();
+			this->catSpawnTimer = 0.f;
+		}
+		else
+			this->catSpawnTimer += 1.f;
+	}
+	for (int i = 0; i < this->cats.size(); i++)
+	{
+		bool deleted = false;
+		this->cats[i].move(0.f, 1.f);
+		if (this->cats[i].getGlobalBounds().contains(this->mousePosView))
+		{
+			deleted = true;
+			this->points += 10;
+		}	
+		if (this->cats[i].getPosition().y > this->window->getSize().y)
+		{
+			deleted = true;
+		}
+		if (deleted)
+			this->cats.erase(this->cats.begin() + i);
+	}
+
+}
+
 void Game::updateEnem()
 {
 	if(this->enemies.size() < this->maxEnemies)
@@ -121,6 +194,7 @@ void Game::updateEnem()
 			if (this->enemies[i].getGlobalBounds().contains(this->mousePosView))
 			{
 				deleted = true;
+				this->points -= 10;
 			}
 		}
 		if (this->enemies[i].getPosition().y > this->window->getSize().y)
@@ -145,6 +219,15 @@ void Game::update()
 	this->pollEvents();
 	this->updateMousePos();
 	this->updateEnem();
+	this->updateCat();
+}
+
+void Game::renderCat()
+{
+	for (auto &e : this->cats)
+	{
+		this->window->draw(e);
+	}
 }
 
 void Game::renderEnemy()
@@ -168,6 +251,8 @@ void Game::render()
 
 	//will draw game objct
 	this->renderEnemy();
-	this->window->draw(this->enemy);
+	this->renderCat();
+//	this->window->draw(this->enemy);
+//	this->window->draw(this->cat);
 	this->window->display();
 }

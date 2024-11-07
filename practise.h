@@ -27,19 +27,33 @@ private:
 	sf::Vector2f mousePosView;
 
 	//Game logic stuff
-	int	points;
-	float enemySpawnTimer;
-	float enemySpawnTimerMax;
-	int	maxEnemies;
+	int		points;
 
+	float	enemySpawnTimer;
+	float	enemySpawnTimerMax;
+	int		maxEnemies;
+
+	float	catSpawnTimer;
+	float	catSpawnTimerMax;
+	int		maxCats;
 
 	//Game objects stuff
-	//sf::Sprite	kisu;
-	std::vector<sf::RectangleShape> enemies;
-	sf::RectangleShape enemy;
+
+	std::vector<sf::Texture> catTexture;
+	std::vector<sf::Sprite> cats;
+	sf::Sprite cat;
+
+	sf::Texture enemyTexture;
+	std::vector<sf::Sprite> enemies;
+	sf::Sprite enemy;
+
+	//this is for the simple version
+	//std::vector<sf::RectangleShape> enemies;
+	//sf::RectangleShape enemy;
 
 	void init_var();
 	void init_win();
+	void initCats();
 	void init_enemies();
 //	void initKisu();
 
@@ -54,9 +68,15 @@ public:
 	 //functions
 	 void pollEvents();
 	 void updateMousePos();
+	 
 	 void spawnEnemy();
 	 void updateEnem();
 	 void renderEnemy();
+	 
+	 void spawnCat();
+	 void updateCat();
+	 void renderCat();
+
 	 void update();
 	 void render();
 };
